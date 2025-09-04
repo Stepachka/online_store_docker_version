@@ -12,7 +12,6 @@ const HomePage: React.FC = () => {
     const loadProducts = async () => {
       try {
         const products = await api.products.getAll();
-        console.log(products);
         setFeaturedProducts(products.slice(0, 6)); // Первые 6 товаров
       } catch (error) {
         console.error("Error loading products:", error);
