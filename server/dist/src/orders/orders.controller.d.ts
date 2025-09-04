@@ -6,24 +6,24 @@ export declare class OrdersController {
     constructor(ordersService: OrdersService);
     create(createOrderDto: CreateOrderDto): Promise<{
         custom: {
+            email: string;
+            name: string | null;
             createdAt: Date;
             updatedAt: Date;
             id: number;
-            name: string | null;
-            email: string;
         } | null;
         items: ({
             category: {
-                title: string;
                 createdAt: Date;
                 updatedAt: Date;
                 id: number;
+                title: string;
             };
             product: {
-                title: string;
                 createdAt: Date;
                 updatedAt: Date;
                 id: number;
+                title: string;
                 cost: number;
                 img: string;
             };
@@ -37,34 +37,34 @@ export declare class OrdersController {
             orderId: number;
         })[];
     } & {
-        title: string;
-        content: string | null;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
         id: number;
+        title: string;
+        content: string | null;
+        status: string;
         customId: number | null;
     }>;
     findAll(): Promise<({
         custom: {
+            email: string;
+            name: string | null;
             createdAt: Date;
             updatedAt: Date;
             id: number;
-            name: string | null;
-            email: string;
         } | null;
         items: ({
             category: {
-                title: string;
                 createdAt: Date;
                 updatedAt: Date;
                 id: number;
+                title: string;
             };
             product: {
-                title: string;
                 createdAt: Date;
                 updatedAt: Date;
                 id: number;
+                title: string;
                 cost: number;
                 img: string;
             };
@@ -78,34 +78,34 @@ export declare class OrdersController {
             orderId: number;
         })[];
     } & {
-        title: string;
-        content: string | null;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
         id: number;
+        title: string;
+        content: string | null;
+        status: string;
         customId: number | null;
     })[]>;
     findOne(id: number): Promise<{
         custom: {
+            email: string;
+            name: string | null;
             createdAt: Date;
             updatedAt: Date;
             id: number;
-            name: string | null;
-            email: string;
         } | null;
         items: ({
             category: {
-                title: string;
                 createdAt: Date;
                 updatedAt: Date;
                 id: number;
+                title: string;
             };
             product: {
-                title: string;
                 createdAt: Date;
                 updatedAt: Date;
                 id: number;
+                title: string;
                 cost: number;
                 img: string;
             };
@@ -119,30 +119,30 @@ export declare class OrdersController {
             orderId: number;
         })[];
     } & {
-        title: string;
-        content: string | null;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
         id: number;
+        title: string;
+        content: string | null;
+        status: string;
         customId: number | null;
     }>;
     remove(id: number): Promise<{
-        title: string;
-        content: string | null;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
         id: number;
+        title: string;
+        content: string | null;
+        status: string;
         customId: number | null;
     }>;
     update(id: number, createOrderDto: UpdateOrderDto): Promise<{
-        title: string;
-        content: string | null;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
         id: number;
+        title: string;
+        content: string | null;
+        status: string;
         customId: number | null;
     }>;
 }

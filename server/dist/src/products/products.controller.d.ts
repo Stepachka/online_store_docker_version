@@ -6,88 +6,88 @@ export declare class ProductsController {
     constructor(productsService: ProductsService);
     create(createProductDto: CreateProductDto): Promise<{
         categories: {
-            title: string;
             createdAt: Date;
             updatedAt: Date;
             id: number;
+            title: string;
         }[];
     } & {
-        cost: number;
-        title: string;
-        img: string;
         createdAt: Date;
         updatedAt: Date;
         id: number;
+        title: string;
+        cost: number;
+        img: string;
     }>;
     findAll(): Promise<({
-        categories: {
-            title: string;
-            createdAt: Date;
-            updatedAt: Date;
-            id: number;
-        }[];
         orderItems: {
             createdAt: Date;
             updatedAt: Date;
             id: number;
+            quantity: number;
             categoryId: number;
             productId: number;
             orderId: number;
-            quantity: number;
+        }[];
+        categories: {
+            createdAt: Date;
+            updatedAt: Date;
+            id: number;
+            title: string;
         }[];
     } & {
-        cost: number;
-        title: string;
-        img: string;
         createdAt: Date;
         updatedAt: Date;
         id: number;
+        title: string;
+        cost: number;
+        img: string;
     })[]>;
     findOne(id: string): Promise<{
-        categories: {
-            title: string;
-            createdAt: Date;
-            updatedAt: Date;
-            id: number;
-        }[];
         orderItems: {
             createdAt: Date;
             updatedAt: Date;
             id: number;
+            quantity: number;
             categoryId: number;
             productId: number;
             orderId: number;
-            quantity: number;
+        }[];
+        categories: {
+            createdAt: Date;
+            updatedAt: Date;
+            id: number;
+            title: string;
         }[];
     } & {
-        cost: number;
-        title: string;
-        img: string;
         createdAt: Date;
         updatedAt: Date;
         id: number;
+        title: string;
+        cost: number;
+        img: string;
     }>;
     update(id: string, updateProductDto: UpdateProductDto): Promise<{
         categories: {
-            title: string;
             createdAt: Date;
             updatedAt: Date;
             id: number;
+            title: string;
         }[];
     } & {
-        cost: number;
-        title: string;
-        img: string;
         createdAt: Date;
         updatedAt: Date;
         id: number;
+        title: string;
+        cost: number;
+        img: string;
     }>;
     remove(id: string): Promise<{
-        cost: number;
-        title: string;
-        img: string;
         createdAt: Date;
         updatedAt: Date;
         id: number;
+        title: string;
+        cost: number;
+        img: string;
     }>;
 }

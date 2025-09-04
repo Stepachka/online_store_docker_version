@@ -5,17 +5,17 @@ export declare class CategoriesService {
     private prisma;
     constructor(prisma: PrismaService);
     create(createCategoryDto: CreateCategoryDto): Promise<{
-        title: string;
         createdAt: Date;
         updatedAt: Date;
         id: number;
+        title: string;
     }>;
     findAll(): Promise<({
         products: {
-            title: string;
             createdAt: Date;
             updatedAt: Date;
             id: number;
+            title: string;
             cost: number;
             img: string;
         }[];
@@ -23,23 +23,23 @@ export declare class CategoriesService {
             createdAt: Date;
             updatedAt: Date;
             id: number;
+            quantity: number;
             categoryId: number;
             productId: number;
             orderId: number;
-            quantity: number;
         }[];
     } & {
-        title: string;
         createdAt: Date;
         updatedAt: Date;
         id: number;
+        title: string;
     })[]>;
     findOne(id: number): Promise<{
         products: {
-            title: string;
             createdAt: Date;
             updatedAt: Date;
             id: number;
+            title: string;
             cost: number;
             img: string;
         }[];
@@ -47,27 +47,27 @@ export declare class CategoriesService {
             createdAt: Date;
             updatedAt: Date;
             id: number;
+            quantity: number;
             categoryId: number;
             productId: number;
             orderId: number;
-            quantity: number;
         }[];
     } & {
-        title: string;
         createdAt: Date;
         updatedAt: Date;
         id: number;
+        title: string;
     }>;
     remove(id: number): Promise<{
-        title: string;
         createdAt: Date;
         updatedAt: Date;
         id: number;
+        title: string;
     }>;
     update(id: number, body: UpdateCategoryDto): Promise<{
-        title: string;
         createdAt: Date;
         updatedAt: Date;
         id: number;
+        title: string;
     }>;
 }

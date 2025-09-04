@@ -6,88 +6,88 @@ export declare class ProductsService {
     constructor(prisma: PrismaService);
     create(createProductDto: CreateProductDto): Promise<{
         categories: {
-            title: string;
             createdAt: Date;
             updatedAt: Date;
             id: number;
+            title: string;
         }[];
     } & {
-        cost: number;
-        title: string;
-        img: string;
         createdAt: Date;
         updatedAt: Date;
         id: number;
+        title: string;
+        cost: number;
+        img: string;
     }>;
     findAll(): Promise<({
-        categories: {
-            title: string;
-            createdAt: Date;
-            updatedAt: Date;
-            id: number;
-        }[];
         orderItems: {
             createdAt: Date;
             updatedAt: Date;
             id: number;
+            quantity: number;
             categoryId: number;
             productId: number;
             orderId: number;
-            quantity: number;
+        }[];
+        categories: {
+            createdAt: Date;
+            updatedAt: Date;
+            id: number;
+            title: string;
         }[];
     } & {
-        cost: number;
-        title: string;
-        img: string;
         createdAt: Date;
         updatedAt: Date;
         id: number;
+        title: string;
+        cost: number;
+        img: string;
     })[]>;
     findOne(id: number): Promise<{
-        categories: {
-            title: string;
-            createdAt: Date;
-            updatedAt: Date;
-            id: number;
-        }[];
         orderItems: {
             createdAt: Date;
             updatedAt: Date;
             id: number;
+            quantity: number;
             categoryId: number;
             productId: number;
             orderId: number;
-            quantity: number;
+        }[];
+        categories: {
+            createdAt: Date;
+            updatedAt: Date;
+            id: number;
+            title: string;
         }[];
     } & {
-        cost: number;
-        title: string;
-        img: string;
         createdAt: Date;
         updatedAt: Date;
         id: number;
+        title: string;
+        cost: number;
+        img: string;
     }>;
     update(id: number, updateProductDto: UpdateProductDto): Promise<{
         categories: {
-            title: string;
             createdAt: Date;
             updatedAt: Date;
             id: number;
+            title: string;
         }[];
     } & {
-        cost: number;
-        title: string;
-        img: string;
         createdAt: Date;
         updatedAt: Date;
         id: number;
+        title: string;
+        cost: number;
+        img: string;
     }>;
     remove(id: number): Promise<{
-        cost: number;
-        title: string;
-        img: string;
         createdAt: Date;
         updatedAt: Date;
         id: number;
+        title: string;
+        cost: number;
+        img: string;
     }>;
 }

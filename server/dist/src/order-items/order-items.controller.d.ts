@@ -4,77 +4,77 @@ export declare class OrderItemsController {
     constructor(orderItemsService: OrderItemsService);
     findAll(): Promise<({
         category: {
-            id: number;
             createdAt: Date;
             updatedAt: Date;
+            id: number;
             title: string;
         };
         product: {
-            id: number;
             createdAt: Date;
             updatedAt: Date;
+            id: number;
             title: string;
             cost: number;
             img: string;
         };
         order: {
-            id: number;
             createdAt: Date;
             updatedAt: Date;
+            id: number;
             title: string;
             content: string | null;
             status: string;
             customId: number | null;
         };
     } & {
+        createdAt: Date;
+        updatedAt: Date;
         id: number;
+        quantity: number;
         categoryId: number;
         productId: number;
         orderId: number;
-        quantity: number;
-        createdAt: Date;
-        updatedAt: Date;
     })[]>;
     findOne(id: string): Promise<{
         category: {
-            id: number;
             createdAt: Date;
             updatedAt: Date;
+            id: number;
             title: string;
         };
         product: {
-            id: number;
             createdAt: Date;
             updatedAt: Date;
+            id: number;
             title: string;
             cost: number;
             img: string;
         };
         order: {
-            id: number;
             createdAt: Date;
             updatedAt: Date;
+            id: number;
             title: string;
             content: string | null;
             status: string;
             customId: number | null;
         };
     } & {
+        createdAt: Date;
+        updatedAt: Date;
         id: number;
+        quantity: number;
         categoryId: number;
         productId: number;
         orderId: number;
-        quantity: number;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     remove(id: string): Promise<{
+        createdAt: Date;
+        updatedAt: Date;
         id: number;
+        quantity: number;
         categoryId: number;
         productId: number;
         orderId: number;
-        quantity: number;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
 }
