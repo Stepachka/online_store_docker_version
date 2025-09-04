@@ -27,7 +27,7 @@ const CheckoutPage: React.FC = () => {
       });
 
       // Создаем заказ
-      const order = await api.orders.create({
+      await api.orders.create({
         title: `Заказ от ${formData.name}`,
         content: `Адрес доставки: ${formData.address}, Телефон: ${formData.phone}`,
         status: "pending",
