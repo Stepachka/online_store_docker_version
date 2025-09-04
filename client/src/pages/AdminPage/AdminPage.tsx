@@ -420,7 +420,7 @@ const AdminPage: React.FC = () => {
           <div className="orders-list">
             <h3>Заказы</h3>
             {orders.map((order) => (
-              <div key={order.id} className="admin-item">
+              <div key={order.id} className="admin-item" style={{ display: "flex", justifyContent: "space-between" }}>
                 <div className="item-info">
                   <h4>{order.title}</h4>
                   <p>Статус: {order.status}</p>
@@ -443,7 +443,7 @@ const AdminPage: React.FC = () => {
           <div className="users-list">
             <h3>Пользователи</h3>
             {users.map((user) => (
-              <div key={user.id} className="admin-item">
+              <div key={user.id} className="admin-item" style={{ display: "flex", justifyContent: "space-between" }}>
                 <div className="item-info">
                   <h4>{user.name || "Без имени"}</h4>
                   <p>Email: {user.email}</p>
@@ -462,7 +462,11 @@ const AdminPage: React.FC = () => {
           <div className="categories-list">
             <h3>Категории</h3>
             {categories.map((category) => (
-              <div key={category.id} className="admin-item">
+              <div
+                key={category.id}
+                className="admin-item"
+                style={{ display: "flex", justifyContent: "space-between" }}
+              >
                 <div className="item-info">
                   <h4>{category.title}</h4>
                   <p>Товаров: {category.products.length}</p>
