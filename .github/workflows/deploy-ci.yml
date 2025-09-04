@@ -1,0 +1,99 @@
+name: Deploy Infrastructure
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy'
+        required: true
+        default: 'development'
+        type: choice
+        options:
+          - development
+          - staging
+          - production
+
+  push:
+    branches: [ main ]
+    paths:
+      - 'infra/**'
+      - '.github/workflows/deploy-ci.yml'
+
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'infra/**'
+
+env:
+  AWS_REGION: us-east-1
+  TF_VERSION: 1.5.0
+
+jobs:
+  deploy:
+    name: 'Deploy to ${{ github.event.inputs.environment || 'development' }}'
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'development' }}
+    
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ env.TF_VERSION }}
+
+    - name: Setup Ansible
+      run: sudo apt-get install -y ansible
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Create SSH directory
+      run: |
+        mkdir -p ~/.ssh
+        chmod 700 ~/.ssh
+
+    - name: Make deploy script executable
+      run: chmod +x infra/deploy.sh
+
+    - name: Run infrastructure deployment
+      run: |
+        cd infra
+        ./deploy.sh
+
+    - name: Save deployment outputs
+      run: |
+        cd infra/terraform
+        terraform output -json > terraform_outputs.json
+        echo "DEPLOYMENT_TIME=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
+
+    - name: Upload deployment artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: deployment-outputs
+        path: |
+          infra/terraform/terraform_outputs.json
+          infra/deploy.sh
+
+    - name: Send success notification
+      if: success()
+      run: |
+        echo "✅ Deployment completed successfully at ${{ env.DEPLOYMENT_TIME }}"
+        echo "View deployment details in artifacts"
+
+    - name: Send failure notification
+      if: failure()
+      run: |
+        echo "❌ Deployment failed at ${{ env.DEPLOYMENT_TIME }}"
+        exit 1
