@@ -1,0 +1,9 @@
+- name: Deploy application to production
+  hosts: production
+  become: yes
+  vars:
+    dockerhub_username: "{{ secrets.DOCKERHUB_USERNAME }}"
+
+  roles:
+    - role: docker
+    - role: deploy

@@ -1,71 +1,31 @@
+version: '3.8'
+
 services:
-  # PostgreSQL Database
-  postgres:
-    image: postgres:15-alpine
-    container_name: ecommerce-postgres
-    environment:
-      POSTGRES_DB: ecommerce_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./server/prisma/migrations:/docker-entrypoint-initdb.d/migrations
-    networks:
-      - ecommerce-network
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-  # NestJS Server
   server:
-    build:
-      context: ./server
-      dockerfile: Dockerfile
-    container_name: ecommerce-server
-    environment:
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/ecommerce_db
-      NODE_ENV: production
-      PORT: 3000
+    image: {{ dockerhub_username }}/online-shop-server:latest
     ports:
       - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://user:password@db:5432/production
     depends_on:
-      postgres:
-        condition: service_healthy
-    networks:
-      - ecommerce-network
-    volumes:
-      - ./server/prisma:/app/prisma
-    command: >
-      sh -c "
-        npx prisma migrate deploy &&
-        npx prisma db seed &&
-        node dist/src/main.js
-      "
+      - db
 
-  # React Client
   client:
-    build:
-      context: ./client
-      dockerfile: Dockerfile
-    container_name: ecommerce-client
+    image: {{ dockerhub_username }}/online-shop-client:latest
     ports:
-      - "8000:80"
+      - "80:80"
     depends_on:
       - server
-    networks:
-      - ecommerce-network
-    environment:
-      - REACT_APP_API_URL=http://localhost:3000
-  # Redis for caching (optional)
 
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: production
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
   postgres_data:
-
-
-networks:
-  ecommerce-network:
-    driver: bridge
