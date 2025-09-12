@@ -14,7 +14,7 @@ const HomePage: React.FC = () => {
         const products = await api.products.getAll();
         setFeaturedProducts(products.slice(0, 6));
       } catch (error) {
-        console.error("Error loading products:", error);
+        console.error("Errors loading products:", error);
       } finally {
         setLoading(false);
       }
