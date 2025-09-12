@@ -50,4 +50,5 @@ jobs:
             --private-key ./private_key \
             -e "dockerhub_username=${{ secrets.DOCKERHUB_USERNAME }}" \
             -e "dockerhub_token=${{ secrets.DOCKERHUB_TOKEN }}" \
+            -e "ansible_host=${{ secrets.SERVER_IP }}" \
             -v
