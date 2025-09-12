@@ -12,7 +12,7 @@ const HomePage: React.FC = () => {
     const loadProducts = async () => {
       try {
         const products = await api.products.getAll();
-        setFeaturedProducts(products.slice(0, 6)); // Первые 6 товаров
+        setFeaturedProducts(products.slice(0, 6));
       } catch (error) {
         console.error("Error loading products:", error);
       } finally {
