@@ -2,9 +2,9 @@ services:
   # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
-    container_name: ecommerce-postgres
+    container_name: online-shop-postgres
     environment:
-      POSTGRES_DB: ecommerce_db
+      POSTGRES_DB: online-shop_db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
@@ -13,7 +13,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./server/prisma/migrations:/docker-entrypoint-initdb.d/migrations
     networks:
-      - ecommerce-network
+      - online-shop-network
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
@@ -24,9 +24,9 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
-    container_name: ecommerce-server
+    container_name: online-shop-server
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/ecommerce_db
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/online-shop_db
       NODE_ENV: production
       PORT: 3000
     ports:
@@ -35,7 +35,7 @@ services:
       postgres:
         condition: service_healthy
     networks:
-      - ecommerce-network
+      - online-shop-network
     volumes:
       - ./server/prisma:/app/prisma
     command: >
@@ -50,16 +50,15 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
-    container_name: ecommerce-client
+    container_name: online-shop-client
     ports:
       - "8000:80"
     depends_on:
       - server
     networks:
-      - ecommerce-network
+      - online-shop-network
     environment:
       - REACT_APP_API_URL=http://90.156.227.180:3000
-  # Redis for caching (optional)
 
 
 volumes:
@@ -67,5 +66,5 @@ volumes:
 
 
 networks:
-  ecommerce-network:
+  online-shop-network:
     driver: bridge
