@@ -1,0 +1,71 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: ecommerce-postgres
+    environment:
+      POSTGRES_DB: ecommerce_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./server/prisma/migrations:/docker-entrypoint-initdb.d/migrations
+    networks:
+      - ecommerce-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  # NestJS Server
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: ecommerce-server
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/ecommerce_db
+      NODE_ENV: production
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - ecommerce-network
+    volumes:
+      - ./server/prisma:/app/prisma
+    command: >
+      sh -c "
+        npx prisma migrate deploy &&
+        npx prisma db seed &&
+        node dist/src/main.js
+      "
+
+  # React Client
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: ecommerce-client
+    ports:
+      - "8000:80"
+    depends_on:
+      - server
+    networks:
+      - ecommerce-network
+    environment:
+      - REACT_APP_API_URL=http://localhost:3000
+  # Redis for caching (optional)
+
+
+volumes:
+  postgres_data:
+
+
+networks:
+  ecommerce-network:
+    driver: bridge

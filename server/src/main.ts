@@ -5,12 +5,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   // Включение CORS
   app.enableCors({
-    origin: 'http://localhost:3000', // URL вашего React приложения
+    origin: '*', // URL вашего React приложения
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
     allowedHeaders: 'Content-Type, Authorization, X-Requested-With',
   });
-  await app.listen(process.env.PORT ?? 3001);
-  console.log('server listen on port:', process.env.PORT ?? 3001);
+  await app.listen(process.env.PORT ?? 3000);
+  console.log('server listen on port:', process.env.PORT ?? 3000);
 }
 bootstrap();
