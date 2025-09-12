@@ -29,7 +29,7 @@ const HomePage: React.FC = () => {
     <div className="home-page">
       <section className="hero">
         <h1>Добро пожаловать в наш магазин</h1>
-        <p>Лучшие товары по лучшим ценам</p>
+        <p>Лучшие товары по лучшим ценам!!!</p>
         <Link to="/products" className="cta-button">
           Смотреть все товары
         </Link>
