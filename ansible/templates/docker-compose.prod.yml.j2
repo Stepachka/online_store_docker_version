@@ -9,7 +9,7 @@ services:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://user:password@db:5432/production
       - CLIENT_URL=http://{{ ansible_host }}  
-      - SERVER_IP={{ ansible_host }}          # Новая переменная
+      - SERVER_IP={{ ansible_host }}         
     depends_on:
       - db
 

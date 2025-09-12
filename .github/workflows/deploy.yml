@@ -1,20 +1,18 @@
 name: Deploy to Production
 
 on:
-  workflow_run:
-    workflows: ["Server CI", "Client CI"]
-    types: [completed]
+  push:
     branches: [main]
+    paths:
+      - "ansible/**"
+      - ".github/workflows/deploy.yml"
 
 jobs:
   deploy:
     name: Deploy to Production
     runs-on: ubuntu-latest
-    # Запускаем только если ОБА workflow успешны
-    if: >
-      github.event.workflow_run.conclusion == 'success' &&
-      (github.event.workflow_run.name == 'Server CI' || 
-       github.event.workflow_run.name == 'Client CI')
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
