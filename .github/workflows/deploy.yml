@@ -23,6 +23,14 @@ jobs:
           sudo apt-get install -y ansible
           ansible-galaxy collection install community.docker
 
+      - name: Create SSH private key file
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key
+          chmod 600 private_key
+          echo "=== Private key info ==="
+          ls -la private_key
+          head -n 2 private_key
+
       - name: Add server to known hosts
         run: |
           mkdir -p ~/.ssh
@@ -30,23 +38,16 @@ jobs:
           ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
 
-      - name: Create SSH private key file
+      - name: Test SSH connection
         run: |
-          # Создаем приватный ключ из GitHub Secrets
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key
-          chmod 600 private_key
-            
-          # Проверяем что создался правильный приватный ключ
-          echo "=== Private key content start ==="
-          head -n 3 private_key
-          echo "=== Private key content end ==="
+          ssh -i private_key -o StrictHostKeyChecking=no -o BatchMode=yes root@${{ secrets.SERVER_IP }} "echo 'SSH test successful'" || echo "SSH test failed - continuing anyway"
 
       - name: Run Ansible playbook
         env:
-          ANSIBLE_HOST_KEY_CHECKING: False
+          ANSIBLE_HOST_KEY_CHECKING: false
         run: |
-          # Запускаем Ansible с указанием приватного ключа
           ansible-playbook -i ansible/inventory.ini ansible/playbook.yml \
             --private-key ./private_key \
             -e "dockerhub_username=${{ secrets.DOCKERHUB_USERNAME }}" \
-            -e "dockerhub_token=${{ secrets.DOCKERHUB_TOKEN }}"
+            -e "dockerhub_token=${{ secrets.DOCKERHUB_TOKEN }}" \
+            -v
