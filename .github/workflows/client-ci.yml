@@ -109,6 +109,5 @@ jobs:
         with:
           context: ./client
           push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/ecommerce-client:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/ecommerce-client:${{ needs.build.outputs.image-tag }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/ecommerce-client:latest
+          
