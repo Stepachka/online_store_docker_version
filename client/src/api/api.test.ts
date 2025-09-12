@@ -36,7 +36,7 @@ describe('API Client', () => {
         const result = await api.products.create(createData);
 
         expect(mockedAxios.post).toHaveBeenCalledWith(
-          'http://localhost:3001/products',
+          'http://localhost:3000/products',
           createData
         );
         expect(result).toEqual(mockProduct);
@@ -55,7 +55,7 @@ describe('API Client', () => {
 
         await expect(api.products.create(createData)).rejects.toThrow(error);
         expect(mockedAxios.post).toHaveBeenCalledWith(
-          'http://localhost:3001/products',
+          'http://localhost:3000/products',
           createData
         );
       });
@@ -68,7 +68,7 @@ describe('API Client', () => {
 
         const result = await api.products.getAll();
 
-        expect(mockedAxios.get).toHaveBeenCalledWith('http://localhost:3001/products');
+        expect(mockedAxios.get).toHaveBeenCalledWith('http://localhost:3000/products');
         expect(result).toEqual(products);
       });
 
@@ -77,7 +77,7 @@ describe('API Client', () => {
         mockedAxios.get.mockRejectedValueOnce(error);
 
         await expect(api.products.getAll()).rejects.toThrow(error);
-        expect(mockedAxios.get).toHaveBeenCalledWith('http://localhost:3001/products');
+        expect(mockedAxios.get).toHaveBeenCalledWith('http://localhost:3000/products');
       });
     });
 
@@ -88,7 +88,7 @@ describe('API Client', () => {
 
         const result = await api.products.getById(id);
 
-        expect(mockedAxios.get).toHaveBeenCalledWith(`http://localhost:3001/products/${id}`);
+        expect(mockedAxios.get).toHaveBeenCalledWith(`http://localhost:3000/products/${id}`);
         expect(result).toEqual(mockProduct);
       });
 
@@ -98,7 +98,7 @@ describe('API Client', () => {
         mockedAxios.get.mockRejectedValueOnce(error);
 
         await expect(api.products.getById(id)).rejects.toThrow(error);
-        expect(mockedAxios.get).toHaveBeenCalledWith(`http://localhost:3001/products/${id}`);
+        expect(mockedAxios.get).toHaveBeenCalledWith(`http://localhost:3000/products/${id}`);
       });
     });
 
@@ -109,7 +109,7 @@ describe('API Client', () => {
 
         const result = await api.products.delete(id);
 
-        expect(mockedAxios.get).toHaveBeenCalledWith(`http://localhost:3001/products/${id}`);
+        expect(mockedAxios.get).toHaveBeenCalledWith(`http://localhost:3000/products/${id}`);
         expect(result).toEqual(mockProduct);
       });
 
@@ -119,7 +119,7 @@ describe('API Client', () => {
         mockedAxios.get.mockRejectedValueOnce(error);
 
         await expect(api.products.delete(id)).rejects.toThrow(error);
-        expect(mockedAxios.get).toHaveBeenCalledWith(`http://localhost:3001/products/${id}`);
+        expect(mockedAxios.get).toHaveBeenCalledWith(`http://localhost:3000/products/${id}`);
       });
     });
 
@@ -137,7 +137,7 @@ describe('API Client', () => {
         const result = await api.products.update(id, updateData);
 
         expect(mockedAxios.patch).toHaveBeenCalledWith(
-          `http://localhost:3001/products/${id}`,
+          `http://localhost:3000/products/${id}`,
           updateData
         );
         expect(result).toEqual(updatedProduct);
@@ -155,7 +155,7 @@ describe('API Client', () => {
 
         await expect(api.products.update(id, updateData)).rejects.toThrow(error);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
-          `http://localhost:3001/products/${id}`,
+          `http://localhost:3000/products/${id}`,
           updateData
         );
       });
@@ -179,7 +179,7 @@ describe('API Client', () => {
 
         const result = await api.categories.getAll();
 
-        expect(mockedAxios.get).toHaveBeenCalledWith('http://localhost:3001/categories');
+        expect(mockedAxios.get).toHaveBeenCalledWith('http://localhost:3000/categories');
         expect(result).toEqual(categories);
       });
 
@@ -188,7 +188,7 @@ describe('API Client', () => {
         mockedAxios.get.mockRejectedValueOnce(error);
 
         await expect(api.categories.getAll()).rejects.toThrow(error);
-        expect(mockedAxios.get).toHaveBeenCalledWith('http://localhost:3001/categories');
+        expect(mockedAxios.get).toHaveBeenCalledWith('http://localhost:3000/categories');
       });
     });
 
@@ -199,7 +199,7 @@ describe('API Client', () => {
 
         const result = await api.categories.getById(id);
 
-        expect(mockedAxios.get).toHaveBeenCalledWith(`http://localhost:3001/categories/${id}`);
+        expect(mockedAxios.get).toHaveBeenCalledWith(`http://localhost:3000/categories/${id}`);
         expect(result).toEqual(mockCategory);
       });
 
@@ -209,7 +209,7 @@ describe('API Client', () => {
         mockedAxios.get.mockRejectedValueOnce(error);
 
         await expect(api.categories.getById(id)).rejects.toThrow(error);
-        expect(mockedAxios.get).toHaveBeenCalledWith(`http://localhost:3001/categories/${id}`);
+        expect(mockedAxios.get).toHaveBeenCalledWith(`http://localhost:3000/categories/${id}`);
       });
     });
 
@@ -224,7 +224,7 @@ describe('API Client', () => {
         const result = await api.categories.create(createData);
 
         expect(mockedAxios.post).toHaveBeenCalledWith(
-          'http://localhost:3001/categories',
+          'http://localhost:3000/categories',
           createData
         );
         expect(result).toEqual(mockCategory);
@@ -240,7 +240,7 @@ describe('API Client', () => {
 
         await expect(api.categories.create(createData)).rejects.toThrow(error);
         expect(mockedAxios.post).toHaveBeenCalledWith(
-          'http://localhost:3001/categories',
+          'http://localhost:3000/categories',
           createData
         );
       });
@@ -253,7 +253,7 @@ describe('API Client', () => {
 
         await api.categories.delete(id);
 
-        expect(mockedAxios.delete).toHaveBeenCalledWith(`http://localhost:3001/categories/${id}`);
+        expect(mockedAxios.delete).toHaveBeenCalledWith(`http://localhost:3000/categories/${id}`);
       });
 
       it('should handle delete category errors', async () => {
@@ -262,7 +262,7 @@ describe('API Client', () => {
         mockedAxios.delete.mockRejectedValueOnce(error);
 
         await expect(api.categories.delete(id)).rejects.toThrow(error);
-        expect(mockedAxios.delete).toHaveBeenCalledWith(`http://localhost:3001/categories/${id}`);
+        expect(mockedAxios.delete).toHaveBeenCalledWith(`http://localhost:3000/categories/${id}`);
       });
     });
 
@@ -278,7 +278,7 @@ describe('API Client', () => {
         await api.categories.update(id, updateData);
 
         expect(mockedAxios.patch).toHaveBeenCalledWith(
-          `http://localhost:3001/categories/${id}`,
+          `http://localhost:3000/categories/${id}`,
           updateData
         );
       });
@@ -294,7 +294,7 @@ describe('API Client', () => {
 
         await expect(api.categories.update(id, updateData)).rejects.toThrow(error);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
-          `http://localhost:3001/categories/${id}`,
+          `http://localhost:3000/categories/${id}`,
           updateData
         );
       });
@@ -334,7 +334,7 @@ describe('API Client', () => {
         const result = await api.orders.create(createData);
 
         expect(mockedAxios.post).toHaveBeenCalledWith(
-          'http://localhost:3001/orders',
+          'http://localhost:3000/orders',
           createData
         );
         expect(result).toEqual(mockOrder);
@@ -360,7 +360,7 @@ describe('API Client', () => {
 
         await expect(api.orders.create(createData)).rejects.toThrow(error);
         expect(mockedAxios.post).toHaveBeenCalledWith(
-          'http://localhost:3001/orders',
+          'http://localhost:3000/orders',
           createData
         );
       });
@@ -373,7 +373,7 @@ describe('API Client', () => {
 
         const result = await api.orders.getAll();
 
-        expect(mockedAxios.get).toHaveBeenCalledWith('http://localhost:3001/orders');
+        expect(mockedAxios.get).toHaveBeenCalledWith('http://localhost:3000/orders');
         expect(result).toEqual(orders);
       });
 
@@ -382,7 +382,7 @@ describe('API Client', () => {
         mockedAxios.get.mockRejectedValueOnce(error);
 
         await expect(api.orders.getAll()).rejects.toThrow(error);
-        expect(mockedAxios.get).toHaveBeenCalledWith('http://localhost:3001/orders');
+        expect(mockedAxios.get).toHaveBeenCalledWith('http://localhost:3000/orders');
       });
     });
 
@@ -393,7 +393,7 @@ describe('API Client', () => {
 
         await api.orders.delete(id);
 
-        expect(mockedAxios.delete).toHaveBeenCalledWith(`http://localhost:3001/orders/${id}`);
+        expect(mockedAxios.delete).toHaveBeenCalledWith(`http://localhost:3000/orders/${id}`);
       });
 
       it('should handle delete order errors', async () => {
@@ -402,7 +402,7 @@ describe('API Client', () => {
         mockedAxios.delete.mockRejectedValueOnce(error);
 
         await expect(api.orders.delete(id)).rejects.toThrow(error);
-        expect(mockedAxios.delete).toHaveBeenCalledWith(`http://localhost:3001/orders/${id}`);
+        expect(mockedAxios.delete).toHaveBeenCalledWith(`http://localhost:3000/orders/${id}`);
       });
     });
 
@@ -420,7 +420,7 @@ describe('API Client', () => {
         const result = await api.orders.update(id, updateData);
 
         expect(mockedAxios.patch).toHaveBeenCalledWith(
-          `http://localhost:3001/orders/${id}`,
+          `http://localhost:3000/orders/${id}`,
           updateData
         );
         expect(result).toEqual(updatedOrder);
@@ -438,7 +438,7 @@ describe('API Client', () => {
 
         await expect(api.orders.update(id, updateData)).rejects.toThrow(error);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
-          `http://localhost:3001/orders/${id}`,
+          `http://localhost:3000/orders/${id}`,
           updateData
         );
       });
@@ -467,7 +467,7 @@ describe('API Client', () => {
         const result = await api.users.create(createData);
 
         expect(mockedAxios.post).toHaveBeenCalledWith(
-          'http://localhost:3001/users',
+          'http://localhost:3000/users',
           createData
         );
         expect(result).toEqual(mockUser);
@@ -484,7 +484,7 @@ describe('API Client', () => {
 
         await expect(api.users.create(createData)).rejects.toThrow(error);
         expect(mockedAxios.post).toHaveBeenCalledWith(
-          'http://localhost:3001/users',
+          'http://localhost:3000/users',
           createData
         );
       });
@@ -497,7 +497,7 @@ describe('API Client', () => {
 
         const result = await api.users.getAll();
 
-        expect(mockedAxios.get).toHaveBeenCalledWith('http://localhost:3001/users');
+        expect(mockedAxios.get).toHaveBeenCalledWith('http://localhost:3000/users');
         expect(result).toEqual(users);
       });
 
@@ -506,7 +506,7 @@ describe('API Client', () => {
         mockedAxios.get.mockRejectedValueOnce(error);
 
         await expect(api.users.getAll()).rejects.toThrow(error);
-        expect(mockedAxios.get).toHaveBeenCalledWith('http://localhost:3001/users');
+        expect(mockedAxios.get).toHaveBeenCalledWith('http://localhost:3000/users');
       });
     });
 
@@ -517,7 +517,7 @@ describe('API Client', () => {
 
         await api.users.delete(id);
 
-        expect(mockedAxios.delete).toHaveBeenCalledWith(`http://localhost:3001/users/${id}`);
+        expect(mockedAxios.delete).toHaveBeenCalledWith(`http://localhost:3000/users/${id}`);
       });
 
       it('should handle delete user errors', async () => {
@@ -526,7 +526,7 @@ describe('API Client', () => {
         mockedAxios.delete.mockRejectedValueOnce(error);
 
         await expect(api.users.delete(id)).rejects.toThrow(error);
-        expect(mockedAxios.delete).toHaveBeenCalledWith(`http://localhost:3001/users/${id}`);
+        expect(mockedAxios.delete).toHaveBeenCalledWith(`http://localhost:3000/users/${id}`);
       });
     });
 
@@ -543,7 +543,7 @@ describe('API Client', () => {
         await api.users.update(id, updateData);
 
         expect(mockedAxios.patch).toHaveBeenCalledWith(
-          `http://localhost:3001/users/${id}`,
+          `http://localhost:3000/users/${id}`,
           updateData
         );
       });
@@ -560,7 +560,7 @@ describe('API Client', () => {
 
         await expect(api.users.update(id, updateData)).rejects.toThrow(error);
         expect(mockedAxios.patch).toHaveBeenCalledWith(
-          `http://localhost:3001/users/${id}`,
+          `http://localhost:3000/users/${id}`,
           updateData
         );
       });

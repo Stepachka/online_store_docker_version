@@ -140,5 +140,5 @@ jobs:
         with:
           context: ./server
           push: true
-          tags:  ${{ secrets.DOCKERHUB_USERNAME }}/ecommerce-server:latest
+          tags:  ${{ secrets.DOCKERHUB_USERNAME }}/online-shop-server:latest
            
