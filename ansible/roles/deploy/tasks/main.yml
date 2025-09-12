@@ -9,6 +9,12 @@
     src: ../../templates/docker-compose.prod.yml.j2
     dest: /app/docker-compose.yml
 
+- name: Copy Prisma migrations and seeds
+  copy:
+    src: ../../../../server/prisma/
+    dest: /app/server/prisma/
+    mode: "0755"
+
 - name: Login to Docker Hub
   shell: |
     echo "{{ dockerhub_token }}" | docker login -u "{{ dockerhub_username }}" --password-stdin
@@ -16,7 +22,20 @@
 - name: Pull and start containers
   shell: |
     cd /app && docker compose pull
-    cd /app && docker compose up -d --remove-orphans
+    cd /app && docker compose up -d --wait
+
+- name: Wait for database initialization
+  pause:
+    seconds: 15
+
+- name: Check if migrations applied
+  shell: |
+    cd /app && docker compose logs server | grep -i "migrate\|seed"
+  register: migration_logs
+
+- name: Show migration logs
+  debug:
+    msg: "{{ migration_logs.stdout }}"
 
 - name: Check containers status
   shell: docker ps

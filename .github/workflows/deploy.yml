@@ -1,17 +1,19 @@
 name: Deploy to Production
 
 on:
-  push:
+  workflow_run:
+    workflows: ["Server CI", "Client CI"]
+    types: [completed]
     branches: [main]
-    paths:
-      - "ansible/**"
-      - ".github/workflows/deploy.yml"
 
 jobs:
   deploy:
     name: Deploy to Production
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      (github.event.workflow_run.name == 'Server CI' || 
+       github.event.workflow_run.name == 'Client CI')
 
     steps:
       - name: Checkout code
@@ -27,9 +29,6 @@ jobs:
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key
           chmod 600 private_key
-          echo "=== Private key info ==="
-          ls -la private_key
-          head -n 2 private_key
 
       - name: Add server to known hosts
         run: |
@@ -37,10 +36,6 @@ jobs:
           chmod 700 ~/.ssh
           ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
-
-      - name: Test SSH connection
-        run: |
-          ssh -i private_key -o StrictHostKeyChecking=no -o BatchMode=yes root@${{ secrets.SERVER_IP }} "echo 'SSH test successful'" || echo "SSH test failed - continuing anyway"
 
       - name: Run Ansible playbook
         env:

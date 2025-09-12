@@ -12,6 +12,12 @@ services:
       - SERVER_IP={{ ansible_host }}         
     depends_on:
       - db
+    command: >
+      sh -c "
+        npx prisma migrate deploy &&
+        npx prisma db seed &&
+        node dist/src/main.js
+      "
 
   client:
     image: {{ dockerhub_username }}/online-shop-client:latest
