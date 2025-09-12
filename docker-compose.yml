@@ -58,7 +58,7 @@ services:
     networks:
       - ecommerce-network
     environment:
-      - REACT_APP_API_URL=http://localhost:3000
+      - REACT_APP_API_URL=http://90.156.227.180:3000
   # Redis for caching (optional)
 
 
