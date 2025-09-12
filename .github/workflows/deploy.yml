@@ -17,8 +17,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Ansible
-        run: sudo apt-get update && sudo apt-get install -y ansible
+      - name: Setup Ansible with Docker collection
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ansible
+          ansible-galaxy collection install community.docker
 
       - name: Add server to known hosts
         run: |

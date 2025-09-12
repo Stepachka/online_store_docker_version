@@ -10,18 +10,18 @@
     dest: /app/docker-compose.yml
 
 - name: Login to Docker Hub
-  community.docker.docker_login:
-    username: "{{ dockerhub_username }}"
-    password: "{{ dockerhub_token }}"
+  shell: |
+    echo "{{ dockerhub_token }}" | docker login -u "{{ dockerhub_username }}" --password-stdin
 
 - name: Pull and start containers
-  community.docker.docker_compose:
-    project_src: /app
-    state: present
-    restarted: yes
-    pull: yes
+  shell: |
+    cd /app && docker compose pull
+    cd /app && docker compose up -d --remove-orphans
 
-- name: Ensure containers are running
-  community.docker.docker_compose:
-    project_src: /app
-    state: started
+- name: Check containers status
+  shell: docker ps
+  register: container_status
+
+- name: Show containers status
+  debug:
+    msg: "{{ container_status.stdout }}"
