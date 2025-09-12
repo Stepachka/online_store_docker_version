@@ -13,8 +13,6 @@ jobs:
     # Запускаем только если ОБА workflow успешны И это push в main
     if: >
       github.event.workflow_run.conclusion == 'success' &&
-      (github.event.workflow_run.name == 'NestJS Server CI' || 
-       github.event.workflow_run.name == 'React Client CI') &&
       github.event.workflow_run.event == 'push' &&
       github.event.workflow_run.head_branch == 'main'
 
