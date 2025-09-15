@@ -1,16 +1,10 @@
+
 variable "timeweb_token" {
-  description = "Timeweb Cloud API token"
   type        = string
-  sensitive   = true
+  description = "API token for Timeweb Cloud"
 }
 
 variable "ssh_public_key" {
-  description = "SSH public key for server access"
   type        = string
-}
-
-variable "server_name" {
-  description = "Server name"
-  type        = string
-  default     = "online-shop-server"
+  description = "Public SSH key for VM access"
 }
