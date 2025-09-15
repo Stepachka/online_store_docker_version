@@ -1,0 +1,72 @@
+name: Terraform Infrastructure
+
+on:
+  workflow_dispatch: # Ручной запуск
+  push:
+    branches: [main]
+    paths:
+      - "terraform/**"
+      - ".github/workflows/terraform.yml"
+
+jobs:
+  terraform:
+    name: "Terraform Plan & Apply"
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: "1.5.0"
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./terraform
+        env:
+          TF_VAR_timeweb_token: ${{ secrets.TIMEWEB_TOKEN }}
+
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: ./terraform
+
+      - name: Terraform Plan
+        run: terraform plan -input=false
+        working-directory: ./terraform
+        env:
+          TF_VAR_timeweb_token: ${{ secrets.TIMEWEB_TOKEN }}
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main'
+        run: terraform apply -input=false -auto-approve
+        working-directory: ./terraform
+        env:
+          TF_VAR_timeweb_token: ${{ secrets.TIMEWEB_TOKEN }}
+
+      - name: Get Server IP
+        id: ip
+        run: |
+          IP=$(terraform output -raw server_ip)
+          echo "server_ip=$IP" >> $GITHUB_OUTPUT
+        working-directory: ./terraform
+        env:
+          TF_VAR_timeweb_token: ${{ secrets.TIMEWEB_TOKEN }}
+
+      - name: Update GitHub Secret with Server IP
+        if: github.ref == 'refs/heads/main'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { execSync } = require('child_process');
+            const ip = '${{ steps.ip.outputs.server_ip }}';
+
+            // Обновляем секрет SERVER_IP
+            execSync(`gh secret set SERVER_IP --body="${ip}" --repo=${context.repo.owner}/${context.repo.name}`, {
+              env: {
+                ...process.env,
+                GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+              }
+            });
