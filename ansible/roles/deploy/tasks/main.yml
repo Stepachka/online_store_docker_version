@@ -1,53 +1,266 @@
-- name: Create app directory (Not strictly needed for K8s but harmless)
+# ansible/roles/deploy/tasks/main.yml
+
+- name: Create app directory for K8s manifests
   file:
-    path: /app
+    path: /app/k8s
     state: directory
     mode: "0755"
 
-- name: Copy K8s manifests (test)
-  copy:
-  # ИСПРАВЛЕННЫЙ ПУТЬ: /home/runner/work/.../online_store_docker_version/k8s/
-  # 'ansible_playbook_dir' указывает на /.../ansible/. Нам нужно подняться на один уровень выше.
-  src: ../../../../k8s/"
-  dest: /app/k8s/
-  mode: "0755"
+---
+- name: Create 'kubectl' symlink to k3s binary (Assuming k3s is installed)
+  # Позволяет использовать команду 'kubectl' вместо '/usr/local/bin/k3s kubectl'
+  file:
+    src: /usr/local/bin/k3s
+    dest: /usr/local/bin/kubectl
+    state: link
+    force: yes
+  ignore_errors: true
 
+---
+- name: Create K8s postgres.yml manifest on server
+  copy:
+    dest: /app/k8s/postgres.yml
+    content: |
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: postgres-service
+      spec:
+        selector:
+          app: postgres
+        ports:
+          - protocol: TCP
+            port: 5432
+            targetPort: 5432
+      ---
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: postgres-deployment
+      spec:
+        selector:
+          matchLabels:
+            app: postgres
+        replicas: 1
+        template:
+          metadata:
+            labels:
+              app: postgres
+          spec:
+            containers:
+            - name: postgres
+              image: postgres:15
+              ports:
+              - containerPort: 5432
+              env:
+              - name: POSTGRES_USER
+                value: postgres
+              - name: POSTGRES_PASSWORD
+                value: postgres
+              - name: POSTGRES_DB
+                value: online-shop_db
+              volumeMounts:
+              - name: postgres-storage
+                mountPath: /var/lib/postgresql/data
+            volumes:
+            - name: postgres-storage
+              persistentVolumeClaim:
+                claimName: postgres-pvc
+      ---
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: postgres-pvc
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+    mode: "0644"
+
+---
+- name: Create K8s server.yml manifest on server
+  copy:
+    dest: /app/k8s/server.yml
+    content: |
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: server-deployment
+      spec:
+        replicas: 1
+        selector:
+          matchLabels:
+            app: server
+        template:
+          metadata:
+            labels:
+              app: server
+            annotations:
+              prometheus.io/scrape: "true"
+              prometheus.io/path: "/metrics"
+              prometheus.io/port: "3000"
+          spec:
+            # InitContainer для ожидания готовности PostgreSQL
+            initContainers:
+              - name: wait-for-postgres
+                image: busybox:1.36.1
+                command: ['sh', '-c', 
+                          'echo "Waiting for PostgreSQL..."; until nc -z postgres-service 5432; do sleep 2; done; echo "PostgreSQL is ready!"']
+            containers:
+            - name: server
+              image: {{ dockerhub_username }}/online-shop-server:latest
+              imagePullPolicy: Always
+              ports:
+              - containerPort: 3000
+              resources:
+                requests:
+                  cpu: "100m"
+                  memory: "128Mi"
+                limits:
+                  cpu: "200m"
+                  memory: "256Mi"
+              env:
+              - name: DATABASE_URL
+                value: "postgresql://postgres:postgres@postgres-service:5432/online-shop_db"
+              - name: NODE_ENV
+                value: "production"
+              # Команда для миграции и запуска
+              command: ["/bin/sh", "-c"]
+              args:
+                - npx prisma migrate deploy;
+                - npx prisma db seed;
+                - node dist/src/main.js
+      ---
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: server-service
+      spec:
+        selector:
+          app: server
+        ports:
+          - protocol: TCP
+            port: 3000
+            targetPort: 3000
+    mode: "0644"
+
+---
+- name: Create K8s client.yml manifest on server
+  copy:
+    dest: /app/k8s/client.yml
+    content: |
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: client-deployment
+      spec:
+        replicas: 1
+        selector:
+          matchLabels:
+            app: client
+        template:
+          metadata:
+            labels:
+              app: client
+          spec:
+            containers:
+            - name: client
+              image: {{ dockerhub_username }}/online-shop-client:latest
+              imagePullPolicy: Always
+              ports:
+              - containerPort: 80
+              env:
+              - name: REACT_APP_API_URL
+                value: "http://server-service:3000"
+      ---
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: client-service
+      spec:
+        selector:
+          app: client
+        ports:
+          - protocol: TCP
+            port: 80
+            targetPort: 80
+            nodePort: 30080
+        type: NodePort
+    mode: "0644"
+
+---
+- name: Create K8s hpa.yml manifest on server
+  copy:
+    dest: /app/k8s/hpa.yml
+    content: |
+      apiVersion: autoscaling/v2
+      kind: HorizontalPodAutoscaler
+      metadata:
+        name: server-hpa
+      spec:
+        scaleTargetRef:
+          apiVersion: apps/v1
+          kind: Deployment
+          name: server-deployment
+        minReplicas: 1
+        maxReplicas: 3
+        metrics:
+          - type: Resource
+            resource:
+              name: cpu
+              target:
+                type: Utilization
+                averageUtilization: 70
+    mode: "0644"
+
+---
+- name: Create K8s grafana-service-nodeport.yml manifest on server
+  copy:
+    dest: /app/k8s/grafana-service-nodeport.yml
+    content: |
+      # Обычно Prometheus и Grafana устанавливаются через Helm,
+      # но если они установлены отдельно, этот Service сделает их доступными.
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: grafana-nodeport
+      spec:
+        selector:
+          app.kubernetes.io/name: grafana
+        type: NodePort
+        ports:
+          - port: 3000
+            targetPort: 3000
+            nodePort: 30090
+            protocol: TCP
+            name: http
+    mode: "0644"
+
+---
 - name: Login to Docker Hub
   shell: |
     echo "{{ dockerhub_token }}" | docker login -u "{{ dockerhub_username }}" --password-stdin
 
-- name: Install k3s
-  shell: |
-    curl -sfL https://get.k3s.io | sh -
-  args:
-    # Убедимся, что k3s устанавливается только один раз.
-    creates: /usr/local/bin/k3s
-
-# --- ШАГИ ДЛЯ KUBERNETES ---
-# Используем полный путь к k3s kubectl (/usr/local/bin/k3s) или просто kubectl,
-# если он находится в PATH после установки k3s. В k3s лучше использовать k3s kubectl.
-
-- name: Wait for k3s to be ready (Give k3s time to start)
-  wait_for:
-    path: /var/lib/rancher/k3s/server/node-token
-    timeout: 180
+# --- ШАГИ РАЗВЕРТЫВАНИЯ KUBERNETES ---
 
 - name: Deploy PostgreSQL and PVC
-  # В k3s обычно используют k3s kubectl.
-  shell: /usr/local/bin/k3s kubectl apply -f /app/k8s/postgres.yml
+  shell: kubectl apply -f /app/k8s/postgres.yml
 
 - name: Deploy Server Deployment and Service
-  shell: /usr/local/bin/k3s kubectl apply -f /app/k8s/server.yml
+  shell: kubectl apply -f /app/k8s/server.yml
 
 - name: Deploy Client Deployment and Service
-  shell: /usr/local/bin/k3s kubectl apply -f /app/k8s/client.yml
+  shell: kubectl apply -f /app/k8s/client.yml
 
 - name: Deploy HPA and Grafana Service
   shell: |
-    /usr/local/bin/k3s kubectl apply -f /app/k8s/hpa.yml
-    /usr/local/bin/k3s kubectl apply -f /app/k8s/grafana-service-nodeport.yml
+    kubectl apply -f /app/k8s/hpa.yml
+    kubectl apply -f /app/k8s/grafana-service-nodeport.yml
 
 - name: Wait for server deployment rollout
+  # Используем полный путь на всякий случай, если симлинк не попал в PATH
   shell: /usr/local/bin/k3s kubectl rollout status deployment/server-deployment --timeout=300s
   register: server_rollout_status
   failed_when: server_rollout_status.rc != 0
@@ -60,11 +273,3 @@
 - name: Show deployment status
   debug:
     msg: "K8s Deployment complete. Check pods with: /usr/local/bin/k3s kubectl get pods"
-
-- name: Check K8s services status
-  shell: /usr/local/bin/k3s kubectl get svc
-  register: service_status
-
-- name: Show K8s services
-  debug:
-    msg: "{{ service_status.stdout }}"
