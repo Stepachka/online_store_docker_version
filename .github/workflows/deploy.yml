@@ -40,13 +40,15 @@ jobs:
           ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
 
-      - name: Run Ansible playbook
+      - name: Run Ansible playbook (with high verbosity for debugging)
         env:
           ANSIBLE_HOST_KEY_CHECKING: false
         run: |
+          # Используем -vvv для максимальной детализации в логах, что поможет
+          # при диагностике проблем с SSH (например, Permission denied)
           ansible-playbook -i ansible/inventory.ini ansible/playbook.yml \
             --private-key ./private_key \
             -e "dockerhub_username=${{ secrets.DOCKERHUB_USERNAME }}" \
             -e "dockerhub_token=${{ secrets.DOCKERHUB_TOKEN }}" \
             -e "ansible_host=${{ secrets.SERVER_IP }}" \
-            -v
+            -vvv
