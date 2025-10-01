@@ -6,9 +6,9 @@
 
 - name: Copy K8s manifests
   copy:
-    # ИСПРАВЛЕННЫЙ ПУТЬ: /home/runner/work/online_store_docker_version/online_store_docker_version/k8s/
-    # Это путь относительно корня репозитория, где запускается git checkout.
-    src: "k8s/"
+    # ИСПРАВЛЕННЫЙ ПУТЬ: /home/runner/work/.../online_store_docker_version/k8s/
+    # 'ansible_playbook_dir' указывает на /.../ansible/. Нам нужно подняться на один уровень выше.
+    src: "{{ ansible_playbook_dir }}/../k8s/"
     dest: /app/k8s/
     mode: "0755"
 
