@@ -17,6 +17,10 @@
   shell: |
     echo "{{ dockerhub_token }}" | docker login -u "{{ dockerhub_username }}" --password-stdin
 
+- name: Install k3s
+  shell: |
+    curl -sfL https://get.k3s.io | sh -
+
 # --- ШАГИ ДЛЯ KUBERNETES ---
 - name: Deploy PostgreSQL and PVC
   shell: /usr/local/bin/k3s kubectl apply -f /app/k8s/postgres.yml
