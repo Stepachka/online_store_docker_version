@@ -1,42 +1,37 @@
-
 terraform {
   required_providers {
     twc = {
-      source  = "timeweb-cloud/timeweb-cloud"
-      version = ">=0.2.0"
+      source = "tf.timeweb.cloud/timeweb-cloud/timeweb-cloud"
     }
   }
-  required_version = ">= 1.3"
-}
-
-provider "twc" {
-  token = var.timeweb_token
+  required_version = ">= 0.13"
 }
 
 data "twc_configurator" "configurator" {
-  location  = "ru-1"
+  location = "ru-1"
   disk_type = "nvme"
 }
 
-data "twc_os" "ubuntu" {
-  name    = "ubuntu"
+data "twc_os" "os" {
+  name = "ubuntu"
   version = "22.04"
 }
 
-resource "twc_server" "vm" {
-  name = "online-shop-vm"
-  os_id = data.twc_os.ubuntu.id
+resource "twc_server" "online-shop-server" {
+  name = "Online shop"
+  os_id = data.twc_os.os.id
 
   configuration {
     configurator_id = data.twc_configurator.configurator.id
-    disk = 30 * 1024    # 30 ГБ NVMe
-    cpu  = 1            # 1 vCPU
-    ram  = 2048         # 2 GB RAM
+    disk = 1024000
+    cpu = 1
+    ram = 1024
   }
-
-  ssh_keys = [var.ssh_public_key]
 }
 
-output "server_ip" {
-  value = twc_server.vm.ipv4
+resource "twc_server_ip" "example-ip" {
+  source_server_id = twc_server.online-shop-server.id
+  
+  type = "ipv4"
+  
 }
