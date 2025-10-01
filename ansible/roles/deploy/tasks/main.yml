@@ -1,57 +1,56 @@
-- name: Create app directory (Not needed for K8s but harmless)
+- name: Create app directory (Not strictly needed for K8s but harmless)
+  # Удален комментарий с двоеточием внутри name
   file:
     path: /app
     state: directory
     mode: "0755"
 
-- name: Copy K8s manifests (Optional: if you use templates, otherwise remove)
-  # Этот шаг можно удалить, если k8s/ директория будет доступна в рабочем каталоге.
-  # Если вы хотите использовать JINJA2 шаблоны, то используйте template:
+- name: Copy K8s manifests
+  # Удален комментарий с двоеточием внутри name
   copy:
-    src: ../../../../k8s/
+    # Используем абсолютный путь, чтобы быть уверенным в расположении
+    src: "{{ playbook_dir }}/../../k8s/"
     dest: /app/k8s/
     mode: "0755"
 
 - name: Login to Docker Hub
-  # Этот шаг не нужен, если вы используете публичные образы,
-  # но может потребоваться для k3s, чтобы кэшировать pull
   shell: |
     echo "{{ dockerhub_token }}" | docker login -u "{{ dockerhub_username }}" --password-stdin
 
-# --- НОВЫЕ ШАГИ ДЛЯ KUBERNETES ---
-
+# --- ШАГИ ДЛЯ KUBERNETES ---
 - name: Deploy PostgreSQL and PVC
-  shell: k3s kubectl apply -f /app/k8s/postgres.yml
-  
+  shell: /usr/local/bin/k3s kubectl apply -f /app/k8s/postgres.yml
+  # Используем полный путь к k3s kubectl, чтобы избежать проблем с PATH
+
 - name: Deploy Server Deployment and Service
-  shell: k3s kubectl apply -f /app/k8s/server.yml
-  
+  shell: /usr/local/bin/k3s kubectl apply -f /app/k8s/server.yml
+
 - name: Deploy Client Deployment and Service
-  shell: k3s kubectl apply -f /app/k8s/client.yml
+  shell: /usr/local/bin/k3s kubectl apply -f /app/k8s/client.yml
 
 - name: Deploy HPA and Grafana Service
   shell: |
-    k3s kubectl apply -f /app/k8s/hpa.yml
-    k3s kubectl apply -f /app/k8s/grafana-service-nodeport.yml
+    /usr/local/bin/k3s kubectl apply -f /app/k8s/hpa.yml
+    /usr/local/bin/k3s kubectl apply -f /app/k8s/grafana-service-nodeport.yml
 
 - name: Wait for server deployment rollout
-  shell: k3s kubectl rollout status deployment/server-deployment --timeout=300s
+  shell: /usr/local/bin/k3s kubectl rollout status deployment/server-deployment --timeout=300s
   register: server_rollout_status
   failed_when: server_rollout_status.rc != 0
-  
+
 - name: Wait for client deployment rollout
-  shell: k3s kubectl rollout status deployment/client-deployment --timeout=300s
+  shell: /usr/local/bin/k3s kubectl rollout status deployment/client-deployment --timeout=300s
   register: client_rollout_status
   failed_when: client_rollout_status.rc != 0
-  
+
 - name: Show deployment status
   debug:
-    msg: "K8s Deployment complete. Check pods with: k3s kubectl get pods"
+    msg: "K8s Deployment complete. Check pods with: /usr/local/bin/k3s kubectl get pods"
 
 - name: Check K8s services status
-  shell: k3s kubectl get svc
+  shell: /usr/local/bin/k3s kubectl get svc
   register: service_status
-  
+
 - name: Show K8s services
   debug:
     msg: "{{ service_status.stdout }}"
