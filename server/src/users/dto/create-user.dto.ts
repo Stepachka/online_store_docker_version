@@ -9,5 +9,3 @@ export class CreateUserDto {
   @IsOptional()
   name?: string;
 }
-
-export class test {}
