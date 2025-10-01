@@ -1,0 +1,40 @@
+# client.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+    spec:
+      containers:
+        - name: client
+          # ИСПОЛЬЗУЕМ ОБРАЗ ИЗ DOCKER HUB
+          image: ${{ secrets.DOCKERHUB_USERNAME }}/online-shop-client:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          env:
+            - name: REACT_APP_API_URL
+              # Указываем внутренний Service-Name
+              value: "http://server-service:3000"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: client-service
+spec:
+  selector:
+    app: client
+  ports:
+    - protocol: TCP
+      port: 80 # Внутренний порт Service
+      targetPort: 80 # Порт контейнера
+      nodePort: 30080
+  type: NodePort

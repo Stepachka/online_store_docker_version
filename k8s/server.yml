@@ -1,0 +1,68 @@
+# server.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: server
+  template:
+    metadata:
+      labels:
+        app: server
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "3000"
+    spec:
+      # --- ДОБАВЛЯЕМ INIT CONTAINER ДЛЯ ОЖИДАНИЯ БД ---
+      initContainers:
+        - name: wait-for-postgres
+          image: busybox:1.36.1
+          command:
+            [
+              "sh",
+              "-c",
+              'echo "Waiting for PostgreSQL to be ready..."; until nc -z postgres-service 5432; do sleep 2; done; echo "PostgreSQL is ready!"',
+            ]
+      # ------------------------------------------------
+      containers:
+        - name: server
+          # ИСПОЛЬЗУЕМ ОБРАЗ ИЗ DOCKER HUB
+          image: ${{ secrets.DOCKERHUB_USERNAME }}/online-shop-server:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
+          env:
+            - name: DATABASE_URL
+              value: "postgresql://postgres:postgres@postgres-service:5432/online-shop_db"
+            - name: NODE_ENV
+              value: "production"
+          # --- ДОБАВЛЯЕМ КОМАНДУ ДЛЯ МИГРАЦИИ И ЗАПУСКА ---
+          command: ["/bin/sh", "-c"]
+          args:
+            - npx prisma migrate deploy;
+            - npx prisma db seed;
+            - node dist/src/main.js
+          # ------------------------------------------------
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: server-service
+spec:
+  selector:
+    app: server
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
