@@ -12,7 +12,7 @@ const AdminPage: React.FC = () => {
   const [editingItem, setEditingItem] = useState<any>(null);
   const [showForm, setShowForm] = useState(false);
 
-  // Формы для создания новых элементов
+  // Формы для создания новых элемент
   const [newProduct, setNewProduct] = useState({
     title: "",
     cost: 0,
