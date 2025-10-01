@@ -1,12 +1,9 @@
-# ansible/roles/deploy/tasks/main.yml
-
 - name: Create app directory for K8s manifests
   file:
     path: /app/k8s
     state: directory
     mode: "0755"
 
----
 - name: Create 'kubectl' symlink to k3s binary (Assuming k3s is installed)
   # Позволяет использовать команду 'kubectl' вместо '/usr/local/bin/k3s kubectl'
   file:
@@ -16,7 +13,6 @@
     force: yes
   ignore_errors: true
 
----
 - name: Create K8s postgres.yml manifest on server
   copy:
     dest: /app/k8s/postgres.yml
@@ -79,7 +75,6 @@
             storage: 1Gi
     mode: "0644"
 
----
 - name: Create K8s server.yml manifest on server
   copy:
     dest: /app/k8s/server.yml
@@ -146,7 +141,6 @@
             targetPort: 3000
     mode: "0644"
 
----
 - name: Create K8s client.yml manifest on server
   copy:
     dest: /app/k8s/client.yml
@@ -190,7 +184,6 @@
         type: NodePort
     mode: "0644"
 
----
 - name: Create K8s hpa.yml manifest on server
   copy:
     dest: /app/k8s/hpa.yml
@@ -215,13 +208,10 @@
                 averageUtilization: 70
     mode: "0644"
 
----
 - name: Create K8s grafana-service-nodeport.yml manifest on server
   copy:
     dest: /app/k8s/grafana-service-nodeport.yml
     content: |
-      # Обычно Prometheus и Grafana устанавливаются через Helm,
-      # но если они установлены отдельно, этот Service сделает их доступными.
       apiVersion: v1
       kind: Service
       metadata:
@@ -238,7 +228,6 @@
             name: http
     mode: "0644"
 
----
 - name: Login to Docker Hub
   shell: |
     echo "{{ dockerhub_token }}" | docker login -u "{{ dockerhub_username }}" --password-stdin
