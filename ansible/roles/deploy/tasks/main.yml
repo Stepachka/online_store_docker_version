@@ -5,14 +5,12 @@
     mode: "0755"
 
 - name: Copy K8s manifests (test)
-  #copy:
+  copy:
   # ИСПРАВЛЕННЫЙ ПУТЬ: /home/runner/work/.../online_store_docker_version/k8s/
   # 'ansible_playbook_dir' указывает на /.../ansible/. Нам нужно подняться на один уровень выше.
-  # src: "{{ ansible_playbook_dir }}/../k8s/"
-  # dest: /app/k8s/
-  # mode: "0755"
-  shell: |
-    echo pwd && echo ls
+  src: ../../../../k8s/"
+  dest: /app/k8s/
+  mode: "0755"
 
 - name: Login to Docker Hub
   shell: |
